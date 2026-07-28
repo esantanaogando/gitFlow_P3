@@ -1,13 +1,14 @@
 // ============================================================
 //  app.js - Responsabilidad: eventos, validaciones y orquestación
-//  (Implementación parcial: solo agregar)
+//  (Implementación parcial: solo agregar + renderizado inicial)
 // ============================================================
 
-document.addEventListener('DOMContentLoaded', init)
-
-function init () {
+document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('part-form');
   const errorEl = document.getElementById('form-error');
+
+  // Renderizar el inventario al cargar la página
+  renderTable();
 
   form.addEventListener('submit', handleSubmit);
 
@@ -47,7 +48,7 @@ function init () {
 
     // Validación de código único
     const parts = getParts();
-    if (parts.some(p => p.codigo === data.codigo)) {
+    if (parts.some((p) => p.codigo === data.codigo)) {
       errors.push('El código ya existe. Por favor, use uno diferente.');
     }
 
@@ -73,13 +74,16 @@ function init () {
     }
 
     // Guardar el repuesto
-    addPart(data);
-    form.reset();
-    console.log("Repuesto agregado.");
+    const newPart = addPart(data);
+    console.log('Repuesto agregado:', newPart);
+
 
     // Limpiar formulario
     form.reset();
     errorEl.classList.remove('show');
     errorEl.textContent = '';
+
+    // Actualizar la tabla con el nuevo repuesto
+    renderTable();
   }
-}
+});
