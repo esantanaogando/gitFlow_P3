@@ -1,6 +1,6 @@
 // ============================================================
 //  storage.js - Responsabilidad: persistencia en LocalStorage
-//  (Implementación parcial: solo agregar)
+//  (Implementación: agregar + editar + eliminar)
 // ============================================================
 
 const STORAGE_KEY = 'autoparts_inventory';
@@ -36,4 +36,55 @@ function addPart(part) {
   parts.push(newPart);
   saveParts(parts);
   return newPart;
+}
+
+/**
+ * Obtiene un repuesto por su id.
+ * @param {string} id - ID del repuesto.
+ * @returns {Object|null} El repuesto o null si no existe.
+ */
+function getPartById(id) {
+  const parts = getParts();
+  return parts.find((p) => p.id === id) || null;
+}
+
+/**
+ * Actualiza un repuesto existente por su id.
+ * @param {string} id - ID del repuesto a actualizar.
+ * @param {Object} updatedData - Datos actualizados.
+ * @returns {Object|null} El repuesto actualizado o null si no se encontró.
+ */
+function updatePart(id, updatedData) {
+  const parts = getParts();
+  const index = parts.findIndex((p) => p.id === id);
+  if (index === -1) return null;
+  const updatedPart = { ...parts[index], ...updatedData };
+  parts[index] = updatedPart;
+  saveParts(parts);
+  return updatedPart;
+}
+
+/**
+ * Elimina un repuesto por su id.
+ * @param {string} id - ID del repuesto a eliminar.
+ * @returns {boolean} true si se eliminó, false si no existía.
+ */
+function deletePart(id) {
+  let parts = getParts();
+  const initialLength = parts.length;
+  parts = parts.filter((p) => p.id !== id);
+  if (parts.length === initialLength) return false;
+  saveParts(parts);
+  return true;
+}
+
+/**
+ * Verifica si un código ya existe, excluyendo un id opcional (para edición).
+ * @param {string} codigo - Código a verificar.
+ * @param {string|null} excludeId - ID a excluir de la búsqueda.
+ * @returns {boolean} true si el código ya existe.
+ */
+function isCodigoDuplicado(codigo, excludeId = null) {
+  const parts = getParts();
+  return parts.some((p) => p.codigo === codigo && p.id !== excludeId);
 }
