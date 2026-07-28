@@ -1,6 +1,6 @@
 // ============================================================
 //  storage.js - Responsabilidad: persistencia en LocalStorage
-//  (Implementación: agregar + editar)
+//  (Implementación: agregar + editar + eliminar)
 // ============================================================
 
 const STORAGE_KEY = 'autoparts_inventory';
@@ -62,6 +62,20 @@ function updatePart(id, updatedData) {
   parts[index] = updatedPart;
   saveParts(parts);
   return updatedPart;
+}
+
+/**
+ * Elimina un repuesto por su id.
+ * @param {string} id - ID del repuesto a eliminar.
+ * @returns {boolean} true si se eliminó, false si no existía.
+ */
+function deletePart(id) {
+  let parts = getParts();
+  const initialLength = parts.length;
+  parts = parts.filter((p) => p.id !== id);
+  if (parts.length === initialLength) return false;
+  saveParts(parts);
+  return true;
 }
 
 /**

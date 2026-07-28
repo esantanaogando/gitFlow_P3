@@ -1,6 +1,6 @@
 // ============================================================
 //  parts.js - Responsabilidad: renderizado e interfaz de usuario
-//  (Implementación: listar + editar)
+//  (Implementación: listar + editar + eliminar)
 // ============================================================
 
 /**
@@ -41,7 +41,7 @@ function renderRow(part) {
       <td>${Number(part.cantidad)}</td>
       <td>
         <button class="btn success edit-btn" data-id="${part.id}">Editar</button>
-        <button class="btn danger" disabled>Eliminar</button>
+        <button class="btn danger delete-btn" data-id="${part.id}">Eliminar</button>
       </td>
     </tr>
   `;
