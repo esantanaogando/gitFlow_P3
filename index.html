@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoParts Manager</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔧 AutoParts Manager</h1>
+      <p>Gestión de inventario de repuestos automotrices</p>
+    </header>
+
+    <main>
+      <!-- Formulario -->
+      <section class="form-section">
+        <h2 id="form-title">Nuevo Repuesto</h2>
+        <form id="part-form" novalidate>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="codigo">Código *</label>
+              <input type="text" id="codigo" placeholder="Ej: BRK-001" />
+            </div>
+            <div class="form-group">
+              <label for="nombre">Nombre *</label>
+              <input type="text" id="nombre" placeholder="Ej: Pastillas de freno" />
+            </div>
+            <div class="form-group">
+              <label for="marca">Marca *</label>
+              <input type="text" id="marca" placeholder="Ej: Bosch" />
+            </div>
+            <div class="form-group">
+              <label for="categoria">Categoría *</label>
+              <input type="text" id="categoria" placeholder="Ej: Frenos" />
+            </div>
+            <div class="form-group">
+              <label for="precio">Precio (€) *</label>
+              <input type="number" id="precio" placeholder="0.00" step="0.01" />
+            </div>
+            <div class="form-group">
+              <label for="cantidad">Cantidad *</label>
+              <input type="number" id="cantidad" placeholder="0" step="1" />
+            </div>
+          </div>
+          <div id="form-error" class="error-message"></div>
+          <div class="form-actions">
+            <button type="submit" id="submit-btn" class="btn primary">Guardar</button>
+            <button type="button" id="cancel-btn" class="btn secondary" style="display:none;">Cancelar</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Listado -->
+      <section class="list-section">
+        <h2>Inventario</h2>
+        <div id="table-container">
+          <table id="parts-table">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Marca</th>
+                <th>Categoría</th>
+                <th>Precio (€)</th>
+                <th>Cantidad</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="parts-body">
+           
+            </tbody>
+          </table>
+          <div id="empty-message" class="empty-message">No hay repuestos registrados.</div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 AutoParts Manager - Todos los derechos reservados</p>
+    </footer>
+  </div>
+
+
+  <script src="js/storage.js"></script>
+  <script src="js/parts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
