@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const cancelBtn = document.getElementById('cancel-btn');
   const partsBody = document.getElementById('parts-body');
 
-  // Renderizar el inventario al cargar la página
   renderTable();
 
   // Evento submit del formulario (crear o actualizar)
