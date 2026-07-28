@@ -1,6 +1,6 @@
 // ============================================================
 //  app.js - Responsabilidad: eventos, validaciones y orquestación
-//  (Implementación: agregar + listar + editar)
+//  (Implementación: agregar + listar + editar + eliminar)
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -9,27 +9,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const cancelBtn = document.getElementById('cancel-btn');
   const partsBody = document.getElementById('parts-body');
 
-
   renderTable();
 
   // Evento submit del formulario (crear o actualizar)
   form.addEventListener('submit', handleSubmit);
 
-
+  // Evento cancelar edición
   cancelBtn.addEventListener('click', () => {
     clearForm();
     hideFormError();
   });
 
+  // Delegación de eventos para botones de editar y eliminar
   partsBody.addEventListener('click', (e) => {
     const target = e.target.closest('button');
     if (!target) return;
 
-    if (target.classList.contains('edit-btn')) {
-      const id = target.dataset.id;
-      if (id) handleEdit(id);
-    }
+    const id = target.dataset.id;
+    if (!id) return;
 
+    if (target.classList.contains('edit-btn')) {
+      handleEdit(id);
+    } else if (target.classList.contains('delete-btn')) {
+      handleDelete(id);
+    }
   });
 
   /**
@@ -67,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
       errors.push('La cantidad no puede ser negativa.');
     }
 
-
+    // Validación de código único (excluyendo el id actual en edición)
     if (isCodigoDuplicado(data.codigo, excludeId)) {
       errors.push('El código ya existe. Por favor, use uno diferente.');
     }
@@ -93,11 +96,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (editId) {
-
+      // Modo edición
       const updated = updatePart(editId, data);
       if (updated) {
         console.log('Repuesto actualizado:', updated);
-        alert('Repuesto actualizado correctamente.');
         updateUI({ editPart: null });
         hideFormError();
       } else {
@@ -107,10 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Modo creación
       const newPart = addPart(data);
       console.log('Repuesto agregado:', newPart);
-      alert('Repuesto agregado correctamente.');
       clearForm();
       hideFormError();
-      renderTable(); 
+      renderTable(); // Actualizar tabla
     }
   }
 
@@ -126,7 +127,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     hideFormError();
     fillFormForEdit(part);
-
+    // Scroll al formulario
     document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  /**
+   * Maneja la eliminación de un repuesto.
+   * @param {string} id - ID del repuesto a eliminar.
+   */
+  function handleDelete(id) {
+    const part = getPartById(id);
+    if (!part) {
+      showFormError('Repuesto no encontrado.');
+      return;
+    }
+
+    if (!confirm(`¿Está seguro de eliminar el repuesto "${part.codigo} - ${part.nombre}"?`)) {
+      return;
+    }
+
+    const deleted = deletePart(id);
+    if (deleted) {
+      // Si estábamos editando ese repuesto, cancelar edición y limpiar formulario
+      if (submitBtn.dataset.editId === id) {
+        clearForm();
+        hideFormError();
+      }
+      renderTable();
+      console.log('Repuesto eliminado:', part);
+    } else {
+      showFormError('No se pudo eliminar el repuesto.');
+    }
   }
 });
