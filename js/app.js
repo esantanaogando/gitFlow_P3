@@ -1,16 +1,36 @@
 // ============================================================
 //  app.js - Responsabilidad: eventos, validaciones y orquestación
-//  (Implementación parcial: solo agregar + renderizado inicial)
+//  (Implementación: agregar + listar + editar)
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('part-form');
-  const errorEl = document.getElementById('form-error');
+  const submitBtn = document.getElementById('submit-btn');
+  const cancelBtn = document.getElementById('cancel-btn');
+  const partsBody = document.getElementById('parts-body');
 
-  // Renderizar el inventario al cargar la página
+
   renderTable();
 
+  // Evento submit del formulario (crear o actualizar)
   form.addEventListener('submit', handleSubmit);
+
+
+  cancelBtn.addEventListener('click', () => {
+    clearForm();
+    hideFormError();
+  });
+
+  partsBody.addEventListener('click', (e) => {
+    const target = e.target.closest('button');
+    if (!target) return;
+
+    if (target.classList.contains('edit-btn')) {
+      const id = target.dataset.id;
+      if (id) handleEdit(id);
+    }
+
+  });
 
   /**
    * Obtiene los datos del formulario como objeto.
@@ -30,9 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
   /**
    * Valida los datos del formulario.
    * @param {Object} data - Datos a validar.
+   * @param {string|null} excludeId - ID a excluir en la verificación de código único.
    * @returns {Array} Array de mensajes de error (vacío si es válido).
    */
-  function validateForm(data) {
+  function validateForm(data, excludeId = null) {
     const errors = [];
 
     if (!data.codigo) errors.push('El código es obligatorio.');
@@ -46,9 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
       errors.push('La cantidad no puede ser negativa.');
     }
 
-    // Validación de código único
-    const parts = getParts();
-    if (parts.some((p) => p.codigo === data.codigo)) {
+
+    if (isCodigoDuplicado(data.codigo, excludeId)) {
       errors.push('El código ya existe. Por favor, use uno diferente.');
     }
 
@@ -61,29 +81,52 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function handleSubmit(e) {
     e.preventDefault();
-    errorEl.classList.remove('show');
-    errorEl.textContent = '';
+    hideFormError();
 
     const data = getFormData();
-    const errors = validateForm(data);
+    const editId = submitBtn.dataset.editId || null;
 
+    const errors = validateForm(data, editId);
     if (errors.length > 0) {
-      errorEl.textContent = errors.join(' ');
-      errorEl.classList.add('show');
+      showFormError(errors.join(' '));
       return;
     }
 
-    // Guardar el repuesto
-    const newPart = addPart(data);
-    console.log('Repuesto agregado:', newPart);
+    if (editId) {
 
+      const updated = updatePart(editId, data);
+      if (updated) {
+        console.log('Repuesto actualizado:', updated);
+        alert('Repuesto actualizado correctamente.');
+        updateUI({ editPart: null });
+        hideFormError();
+      } else {
+        showFormError('No se pudo actualizar el repuesto.');
+      }
+    } else {
+      // Modo creación
+      const newPart = addPart(data);
+      console.log('Repuesto agregado:', newPart);
+      alert('Repuesto agregado correctamente.');
+      clearForm();
+      hideFormError();
+      renderTable(); 
+    }
+  }
 
-    // Limpiar formulario
-    form.reset();
-    errorEl.classList.remove('show');
-    errorEl.textContent = '';
+  /**
+   * Maneja la edición de un repuesto.
+   * @param {string} id - ID del repuesto a editar.
+   */
+  function handleEdit(id) {
+    const part = getPartById(id);
+    if (!part) {
+      showFormError('Repuesto no encontrado.');
+      return;
+    }
+    hideFormError();
+    fillFormForEdit(part);
 
-    // Actualizar la tabla con el nuevo repuesto
-    renderTable();
+    document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
   }
 });
